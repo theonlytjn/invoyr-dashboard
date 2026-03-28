@@ -1,0 +1,1052 @@
+e<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Invoyr — Dashboard</title>
+    <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=Geist:wght@300;400;500;600;700&family=Geist+Mono:wght@400;500&display=swap"
+      rel="stylesheet" />
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" />
+
+    <script>
+      tailwind.config = {
+        theme: {
+          extend: {
+            fontFamily: {
+              serif: ["Instrument Serif", "Georgia", "serif"],
+              sans: ["Geist", "system-ui", "sans-serif"],
+              mono: ["Geist Mono", "monospace"],
+            },
+          },
+        },
+      };
+    </script>
+
+    <style>
+      body {
+        font-family: "Geist", system-ui, sans-serif;
+        background: #f5f5f5;
+      }
+      .font-serif {
+        font-family: "Instrument Serif", Georgia, serif;
+      }
+      .font-mono {
+        font-family: "Geist Mono", monospace;
+      }
+
+      /* ── Sidebar nav ── */
+      .nav-link {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        padding: 8px 12px;
+        border-radius: 8px;
+        font-size: 14px;
+        font-weight: 400;
+        color: #6b7280;
+        transition:
+          background 0.12s,
+          color 0.12s;
+        cursor: pointer;
+      }
+      .nav-link:hover {
+        background: #f3f4f6;
+        color: #111827;
+      }
+      .nav-link.active {
+        background: #111827;
+        color: #fff;
+        font-weight: 500;
+      }
+      .nav-link.active .nav-icon {
+        color: #fff;
+      }
+      .nav-icon {
+        color: #9ca3af;
+        width: 16px;
+        text-align: center;
+        font-size: 14px;
+        flex-shrink: 0;
+        transition: color 0.12s;
+      }
+
+      /* ── Cards ── */
+      .card {
+        background: #fff;
+        border: 1px solid #e5e7eb;
+        border-radius: 12px;
+        overflow: hidden;
+      }
+      .card-header {
+        padding: 16px 20px;
+        border-bottom: 1px solid #f3f4f6;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+      }
+      .card-title {
+        font-size: 15px;
+        font-weight: 600;
+        color: #111827;
+      }
+      .stat-card {
+        background: #fff;
+        border: 1px solid #e5e7eb;
+        border-radius: 12px;
+        padding: 22px 22px 20px;
+      }
+
+      /* ── Buttons ── */
+      .btn-black {
+        background: #111827;
+        color: #fff;
+        border-radius: 8px;
+        padding: 8px 16px;
+        font-size: 14px;
+        font-weight: 500;
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+        cursor: pointer;
+        border: none;
+        transition: background 0.12s;
+      }
+      .btn-black:hover {
+        background: #1f2937;
+      }
+      .btn-outline {
+        background: #fff;
+        color: #374151;
+        border: 1px solid #d1d5db;
+        border-radius: 8px;
+        padding: 7px 14px;
+        font-size: 13px;
+        font-weight: 500;
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+        cursor: pointer;
+        transition: background 0.12s;
+      }
+      .btn-outline:hover {
+        background: #f9fafb;
+      }
+
+      /* ── Badges ── */
+      .badge {
+        display: inline-flex;
+        align-items: center;
+        gap: 5px;
+        padding: 3px 10px;
+        border-radius: 999px;
+        font-size: 12px;
+        font-weight: 500;
+      }
+      .badge-paid {
+        background: #dcfce7;
+        color: #16a34a;
+      }
+      .badge-overdue {
+        background: #fee2e2;
+        color: #dc2626;
+      }
+      .badge-awaiting {
+        background: #fef9c3;
+        color: #ca8a04;
+      }
+      .badge-draft {
+        background: #f3f4f6;
+        color: #6b7280;
+      }
+
+      /* ── Activity tags ── */
+      .tag {
+        display: inline-flex;
+        align-items: center;
+        padding: 2px 8px;
+        border-radius: 999px;
+        font-size: 11px;
+        font-weight: 500;
+      }
+      .tag-green {
+        background: #dcfce7;
+        color: #16a34a;
+      }
+      .tag-blue {
+        background: #dbeafe;
+        color: #2563eb;
+      }
+      .tag-red {
+        background: #fee2e2;
+        color: #dc2626;
+      }
+      .tag-purple {
+        background: #ede9fe;
+        color: #7c3aed;
+      }
+
+      /* ── Table ── */
+      .tbl-row {
+        transition: background 0.1s;
+      }
+      .tbl-row:hover {
+        background: #f9fafb;
+      }
+
+      /* ── Progress ── */
+      .prog-bar {
+        height: 4px;
+        border-radius: 999px;
+        background: #e5e7eb;
+        overflow: hidden;
+      }
+      .prog-fill {
+        height: 100%;
+        border-radius: 999px;
+      }
+
+      /* ── Pulse animation ── */
+      @keyframes pulse-dot {
+        0%,
+        100% {
+          opacity: 1;
+        }
+        50% {
+          opacity: 0.35;
+        }
+      }
+      .pulse {
+        animation: pulse-dot 2s ease-in-out infinite;
+      }
+
+      /* ── Input ── */
+      .search-input {
+        background: #f9fafb;
+        border: 1px solid #e5e7eb;
+        border-radius: 8px;
+        padding: 7px 12px 7px 32px;
+        font-size: 13px;
+        color: #374151;
+        outline: none;
+        font-family: "Geist", sans-serif;
+      }
+      .search-input:focus {
+        border-color: #9ca3af;
+        background: #fff;
+      }
+      .search-input::placeholder {
+        color: #9ca3af;
+      }
+
+      /* Scrollbar */
+      ::-webkit-scrollbar {
+        width: 4px;
+      }
+      ::-webkit-scrollbar-thumb {
+        background: #d1d5db;
+        border-radius: 4px;
+      }
+      ::-webkit-scrollbar-track {
+        background: transparent;
+      }
+    </style>
+  </head>
+
+  <body class="antialiased text-gray-900">
+    <div class="flex h-screen overflow-hidden">
+      <!-- ══════════════════════════════
+       SIDEBAR
+  ══════════════════════════════ -->
+      <aside
+        class="w-[196px] flex-shrink-0 bg-white flex flex-col overflow-y-auto"
+        style="border-right: 1px solid #e5e7eb">
+        <!-- Wordmark -->
+        <div class="flex items-center justify-between px-5 pt-5 pb-5">
+          <span
+            class="font-serif italic text-[22px] leading-none text-gray-900 tracking-tight"
+            >Invoyr</span
+          >
+          <button class="text-gray-400 hover:text-gray-600 transition text-sm">
+            <i class="fa-regular fa-sidebar"></i>
+          </button>
+        </div>
+
+        <!-- Navigation -->
+        <nav class="flex-1 px-3 space-y-0.5">
+          <div class="nav-link active">
+            <i class="nav-icon fa-regular fa-grid-2"></i>
+            <span>Overview</span>
+          </div>
+          <div class="nav-link">
+            <i class="nav-icon fa-regular fa-file-invoice"></i>
+            <span>Invoices</span>
+          </div>
+          <div class="nav-link">
+            <i class="nav-icon fa-regular fa-users"></i>
+            <span>Clients</span>
+          </div>
+          <div class="nav-link">
+            <i class="nav-icon fa-regular fa-sterling-sign"></i>
+            <span>Payments</span>
+          </div>
+          <div class="nav-link">
+            <i class="nav-icon fa-regular fa-rotate"></i>
+            <span>Recurring</span>
+          </div>
+          <div class="nav-link">
+            <i class="nav-icon fa-regular fa-chart-line-up"></i>
+            <span>Reports</span>
+          </div>
+          <div class="nav-link">
+            <i class="nav-icon fa-regular fa-gear"></i>
+            <span>Settings</span>
+          </div>
+        </nav>
+
+        <!-- Upgrade card -->
+        <div
+          class="mx-3 mb-3 mt-4 p-3.5 rounded-xl border border-gray-200"
+          style="background: #fafafa">
+          <div class="flex items-center justify-between mb-1.5">
+            <span class="text-xs font-semibold text-gray-700">Invoices</span>
+            <span class="text-xs text-gray-500 font-mono">14 / ∞</span>
+          </div>
+          <div class="prog-bar mb-2.5">
+            <div class="prog-fill bg-green-500" style="width: 100%"></div>
+          </div>
+          <button
+            class="btn-black w-full justify-center"
+            style="font-size: 12px; padding: 8px 12px">
+            Upgrade to Unlimited
+          </button>
+        </div>
+
+        <!-- User profile -->
+        <div
+          class="flex items-center gap-2.5 px-4 py-3.5 cursor-pointer hover:bg-gray-50 transition"
+          style="border-top: 1px solid #f3f4f6">
+          <div
+            class="w-8 h-8 rounded-full bg-gray-900 flex items-center justify-center flex-shrink-0">
+            <span class="text-white text-xs font-medium">TN</span>
+          </div>
+          <div class="flex-1 min-w-0">
+            <p class="text-sm font-medium text-gray-900 leading-tight truncate">
+              Tony Nwachukwu
+            </p>
+            <p class="text-xs text-gray-500 truncate">Business Plan</p>
+          </div>
+          <i
+            class="fa-solid fa-chevron-down text-gray-400 text-xs flex-shrink-0"></i>
+        </div>
+      </aside>
+
+      <!-- ══════════════════════════════
+       MAIN AREA
+  ══════════════════════════════ -->
+      <div class="flex-1 flex flex-col overflow-hidden">
+        <!-- Top bar -->
+        <header
+          class="h-14 bg-white flex items-center justify-between px-6 flex-shrink-0"
+          style="border-bottom: 1px solid #e5e7eb">
+          <!-- Breadcrumb -->
+          <nav
+            class="flex items-center gap-2 text-xs font-medium tracking-widest uppercase text-gray-400">
+            <span>Dashboard</span>
+            <span class="text-gray-300">/</span>
+            <span class="font-semibold text-gray-900">Overview</span>
+          </nav>
+
+          <!-- Top-right controls -->
+          <div class="flex items-center gap-2">
+            <div class="relative">
+              <i
+                class="fa-regular fa-magnifying-glass absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 text-xs pointer-events-none"></i>
+              <input
+                type="text"
+                placeholder="Search..."
+                class="search-input w-52 pr-10" />
+              <span
+                class="absolute right-3 top-1/2 -translate-y-1/2 text-xs text-gray-400 font-mono pointer-events-none"
+                >⌘K</span
+              >
+            </div>
+            <button
+              class="w-8 h-8 flex items-center justify-center rounded-lg hover:bg-gray-100 transition text-gray-500">
+              <i class="fa-regular fa-calendar text-sm"></i>
+            </button>
+            <button
+              class="relative w-8 h-8 flex items-center justify-center rounded-lg hover:bg-gray-100 transition text-gray-500">
+              <i class="fa-regular fa-bell text-sm"></i>
+              <span
+                class="absolute top-1.5 right-1.5 w-1.5 h-1.5 bg-red-500 rounded-full"></span>
+            </button>
+          </div>
+        </header>
+
+        <!-- Page body (scrollable) -->
+        <main class="flex-1 overflow-y-auto p-6 space-y-4">
+          <!-- Page title row -->
+          <div class="flex items-center justify-between">
+            <h1 class="text-2xl font-semibold text-gray-900 tracking-tight">
+              Welcome back, Tony
+            </h1>
+            <div class="flex items-center gap-2">
+              <button class="btn-outline">
+                <i class="fa-regular fa-calendar text-gray-400 text-xs"></i>
+                This Month
+                <i class="fa-solid fa-chevron-down text-gray-400 text-xs"></i>
+              </button>
+              <button class="btn-black">
+                <i class="fa-solid fa-plus text-xs"></i>
+                New Invoice
+              </button>
+            </div>
+          </div>
+
+          <!-- ── STAT CARDS ── -->
+          <div class="grid grid-cols-3 gap-4">
+            <div class="stat-card">
+              <div class="flex items-start justify-between mb-4">
+                <p
+                  class="text-xs font-medium text-gray-500 uppercase tracking-widest">
+                  Total Revenue
+                </p>
+                <div
+                  class="w-8 h-8 rounded-lg bg-gray-100 flex items-center justify-center">
+                  <i
+                    class="fa-regular fa-sterling-sign text-gray-600 text-sm"></i>
+                </div>
+              </div>
+              <p
+                class="text-[32px] font-semibold text-gray-900 tracking-tight leading-none mb-2">
+                £18,240
+              </p>
+              <p class="text-sm">
+                <span class="text-green-600 font-semibold">+12.5%</span>
+                <span class="text-gray-400">from last month</span>
+              </p>
+            </div>
+
+            <div class="stat-card">
+              <div class="flex items-start justify-between mb-4">
+                <p
+                  class="text-xs font-medium text-gray-500 uppercase tracking-widest">
+                  Invoices Paid
+                </p>
+                <div
+                  class="w-8 h-8 rounded-lg bg-gray-100 flex items-center justify-center">
+                  <i
+                    class="fa-regular fa-circle-check text-gray-600 text-sm"></i>
+                </div>
+              </div>
+              <p
+                class="text-[32px] font-semibold text-gray-900 tracking-tight leading-none mb-2">
+                14
+              </p>
+              <p class="text-sm">
+                <span class="text-green-600 font-semibold">+8</span>
+                <span class="text-gray-400">from last month</span>
+              </p>
+            </div>
+
+            <div class="stat-card" style="border-color: #fecaca">
+              <div class="flex items-start justify-between mb-4">
+                <p
+                  class="text-xs font-medium text-gray-500 uppercase tracking-widest">
+                  Overdue
+                </p>
+                <div
+                  class="w-8 h-8 rounded-lg bg-red-50 flex items-center justify-center">
+                  <i
+                    class="fa-regular fa-triangle-exclamation text-red-500 text-sm"></i>
+                </div>
+              </div>
+              <p
+                class="text-[32px] font-semibold text-red-600 tracking-tight leading-none mb-2">
+                £2,140
+              </p>
+              <p class="text-sm">
+                <span class="text-red-500 font-semibold">2 invoices</span>
+                <span class="text-gray-400">need attention</span>
+              </p>
+            </div>
+          </div>
+
+          <!-- ── INVOICE TABLE + RIGHT PANEL ── -->
+          <div class="grid gap-4" style="grid-template-columns: 1fr 296px">
+            <!-- Invoice table card -->
+            <div class="card">
+              <div class="card-header">
+                <span class="card-title">Latest Invoices</span>
+                <div class="flex items-center gap-2">
+                  <button
+                    class="btn-outline"
+                    style="font-size: 12px; padding: 6px 12px">
+                    <i class="fa-regular fa-calendar text-gray-400 text-xs"></i>
+                    This Month
+                    <i
+                      class="fa-solid fa-chevron-down text-gray-400 text-xs"></i>
+                  </button>
+                  <button
+                    class="w-7 h-7 flex items-center justify-center rounded-lg hover:bg-gray-100 transition text-gray-400">
+                    <i
+                      class="fa-regular fa-arrow-up-right-from-square text-sm"></i>
+                  </button>
+                </div>
+              </div>
+
+              <table class="w-full">
+                <thead
+                  style="background: #fafafa; border-bottom: 1px solid #f3f4f6">
+                  <tr>
+                    <th class="pl-5 pr-3 py-3">
+                      <input
+                        type="checkbox"
+                        class="rounded border-gray-300"
+                        style="width: 14px; height: 14px" />
+                    </th>
+                    <th
+                      class="px-3 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                      Invoice
+                    </th>
+                    <th
+                      class="px-3 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                      Client
+                    </th>
+                    <th
+                      class="px-3 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                      Status
+                    </th>
+                    <th
+                      class="px-3 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                      Due Date
+                    </th>
+                    <th
+                      class="px-3 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">
+                      Amount
+                    </th>
+                    <th
+                      class="px-3 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">
+                      Actions
+                    </th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr class="tbl-row" style="border-bottom: 1px solid #f3f4f6">
+                    <td class="pl-5 pr-3 py-3.5">
+                      <input
+                        type="checkbox"
+                        class="rounded border-gray-300"
+                        style="width: 14px; height: 14px" />
+                    </td>
+                    <td class="px-3 py-3.5">
+                      <span class="font-mono text-xs text-gray-500"
+                        >INV-2026-0042</span
+                      >
+                    </td>
+                    <td class="px-3 py-3.5">
+                      <div class="flex items-center gap-2.5">
+                        <div
+                          class="w-7 h-7 rounded-full bg-violet-100 flex items-center justify-center flex-shrink-0">
+                          <span class="text-violet-700 text-xs font-medium"
+                            >PA</span
+                          >
+                        </div>
+                        <div>
+                          <p class="text-sm font-medium text-gray-900">
+                            Pixel & Arrow
+                          </p>
+                          <p class="text-xs text-gray-400">
+                            hello@pixelarrow.co
+                          </p>
+                        </div>
+                      </div>
+                    </td>
+                    <td class="px-3 py-3.5">
+                      <span class="badge badge-overdue"
+                        ><span
+                          class="w-1.5 h-1.5 rounded-full bg-red-500 pulse"></span
+                        >Overdue</span
+                      >
+                    </td>
+                    <td class="px-3 py-3.5 text-sm font-medium text-red-500">
+                      08 Mar 2026
+                    </td>
+                    <td
+                      class="px-3 py-3.5 text-right text-sm font-semibold text-gray-900">
+                      £1,240.00
+                    </td>
+                    <td class="px-3 py-3.5 text-center">
+                      <button
+                        class="text-gray-400 hover:text-gray-600 transition">
+                        <i class="fa-solid fa-ellipsis-vertical"></i>
+                      </button>
+                    </td>
+                  </tr>
+
+                  <tr class="tbl-row" style="border-bottom: 1px solid #f3f4f6">
+                    <td class="pl-5 pr-3 py-3.5">
+                      <input
+                        type="checkbox"
+                        class="rounded border-gray-300"
+                        style="width: 14px; height: 14px" />
+                    </td>
+                    <td class="px-3 py-3.5">
+                      <span class="font-mono text-xs text-gray-500"
+                        >INV-2026-0041</span
+                      >
+                    </td>
+                    <td class="px-3 py-3.5">
+                      <div class="flex items-center gap-2.5">
+                        <div
+                          class="w-7 h-7 rounded-full bg-sky-100 flex items-center justify-center flex-shrink-0">
+                          <span class="text-sky-700 text-xs font-medium"
+                            >NW</span
+                          >
+                        </div>
+                        <div>
+                          <p class="text-sm font-medium text-gray-900">
+                            Northgate Works
+                          </p>
+                          <p class="text-xs text-gray-400">
+                            accounts@northgate.io
+                          </p>
+                        </div>
+                      </div>
+                    </td>
+                    <td class="px-3 py-3.5">
+                      <span class="badge badge-awaiting"
+                        ><span
+                          class="w-1.5 h-1.5 rounded-full bg-yellow-400"></span
+                        >Awaiting</span
+                      >
+                    </td>
+                    <td class="px-3 py-3.5 text-sm font-medium text-amber-600">
+                      29 Mar 2026
+                    </td>
+                    <td
+                      class="px-3 py-3.5 text-right text-sm font-semibold text-gray-900">
+                      £3,800.00
+                    </td>
+                    <td class="px-3 py-3.5 text-center">
+                      <button
+                        class="text-gray-400 hover:text-gray-600 transition">
+                        <i class="fa-solid fa-ellipsis-vertical"></i>
+                      </button>
+                    </td>
+                  </tr>
+
+                  <tr class="tbl-row" style="border-bottom: 1px solid #f3f4f6">
+                    <td class="pl-5 pr-3 py-3.5">
+                      <input
+                        type="checkbox"
+                        class="rounded border-gray-300"
+                        style="width: 14px; height: 14px" />
+                    </td>
+                    <td class="px-3 py-3.5">
+                      <span class="font-mono text-xs text-gray-500"
+                        >INV-2026-0040</span
+                      >
+                    </td>
+                    <td class="px-3 py-3.5">
+                      <div class="flex items-center gap-2.5">
+                        <div
+                          class="w-7 h-7 rounded-full bg-emerald-100 flex items-center justify-center flex-shrink-0">
+                          <span class="text-emerald-700 text-xs font-medium"
+                            >SM</span
+                          >
+                        </div>
+                        <div>
+                          <p class="text-sm font-medium text-gray-900">
+                            Studio Marta
+                          </p>
+                          <p class="text-xs text-gray-400">
+                            marta@studiomarta.co
+                          </p>
+                        </div>
+                      </div>
+                    </td>
+                    <td class="px-3 py-3.5">
+                      <span class="badge badge-paid"
+                        ><i class="fa-solid fa-check text-xs"></i>Paid</span
+                      >
+                    </td>
+                    <td class="px-3 py-3.5 text-sm text-gray-400">
+                      17 Mar 2026
+                    </td>
+                    <td
+                      class="px-3 py-3.5 text-right text-sm font-semibold text-gray-900">
+                      £2,100.00
+                    </td>
+                    <td class="px-3 py-3.5 text-center">
+                      <button
+                        class="text-gray-400 hover:text-gray-600 transition">
+                        <i class="fa-solid fa-ellipsis-vertical"></i>
+                      </button>
+                    </td>
+                  </tr>
+
+                  <tr class="tbl-row" style="border-bottom: 1px solid #f3f4f6">
+                    <td class="pl-5 pr-3 py-3.5">
+                      <input
+                        type="checkbox"
+                        class="rounded border-gray-300"
+                        style="width: 14px; height: 14px" />
+                    </td>
+                    <td class="px-3 py-3.5">
+                      <span class="font-mono text-xs text-gray-500"
+                        >INV-2026-0039</span
+                      >
+                    </td>
+                    <td class="px-3 py-3.5">
+                      <div class="flex items-center gap-2.5">
+                        <div
+                          class="w-7 h-7 rounded-full bg-orange-100 flex items-center justify-center flex-shrink-0">
+                          <span class="text-orange-700 text-xs font-medium"
+                            >BC</span
+                          >
+                        </div>
+                        <div>
+                          <p class="text-sm font-medium text-gray-900">
+                            Bluecoast Agency
+                          </p>
+                          <p class="text-xs text-gray-400">
+                            finance@bluecoast.com
+                          </p>
+                        </div>
+                      </div>
+                    </td>
+                    <td class="px-3 py-3.5">
+                      <span class="badge badge-overdue"
+                        ><span
+                          class="w-1.5 h-1.5 rounded-full bg-red-500 pulse"></span
+                        >Overdue</span
+                      >
+                    </td>
+                    <td class="px-3 py-3.5 text-sm font-medium text-red-500">
+                      01 Mar 2026
+                    </td>
+                    <td
+                      class="px-3 py-3.5 text-right text-sm font-semibold text-gray-900">
+                      £900.00
+                    </td>
+                    <td class="px-3 py-3.5 text-center">
+                      <button
+                        class="text-gray-400 hover:text-gray-600 transition">
+                        <i class="fa-solid fa-ellipsis-vertical"></i>
+                      </button>
+                    </td>
+                  </tr>
+
+                  <tr class="tbl-row" style="border-bottom: 1px solid #f3f4f6">
+                    <td class="pl-5 pr-3 py-3.5">
+                      <input
+                        type="checkbox"
+                        class="rounded border-gray-300"
+                        style="width: 14px; height: 14px" />
+                    </td>
+                    <td class="px-3 py-3.5">
+                      <span class="font-mono text-xs text-gray-500"
+                        >INV-2026-0038</span
+                      >
+                    </td>
+                    <td class="px-3 py-3.5">
+                      <div class="flex items-center gap-2.5">
+                        <div
+                          class="w-7 h-7 rounded-full bg-indigo-100 flex items-center justify-center flex-shrink-0">
+                          <span class="text-indigo-700 text-xs font-medium"
+                            >FK</span
+                          >
+                        </div>
+                        <div>
+                          <p class="text-sm font-medium text-gray-900">
+                            Finkler & Co
+                          </p>
+                          <p class="text-xs text-gray-400">ap@finklerco.com</p>
+                        </div>
+                      </div>
+                    </td>
+                    <td class="px-3 py-3.5">
+                      <span class="badge badge-paid"
+                        ><i class="fa-solid fa-check text-xs"></i>Paid</span
+                      >
+                    </td>
+                    <td class="px-3 py-3.5 text-sm text-gray-400">
+                      12 Mar 2026
+                    </td>
+                    <td
+                      class="px-3 py-3.5 text-right text-sm font-semibold text-gray-900">
+                      £5,600.00
+                    </td>
+                    <td class="px-3 py-3.5 text-center">
+                      <button
+                        class="text-gray-400 hover:text-gray-600 transition">
+                        <i class="fa-solid fa-ellipsis-vertical"></i>
+                      </button>
+                    </td>
+                  </tr>
+
+                  <tr class="tbl-row">
+                    <td class="pl-5 pr-3 py-3.5">
+                      <input
+                        type="checkbox"
+                        class="rounded border-gray-300"
+                        style="width: 14px; height: 14px" />
+                    </td>
+                    <td class="px-3 py-3.5">
+                      <span class="font-mono text-xs text-gray-500"
+                        >INV-2026-0037</span
+                      >
+                    </td>
+                    <td class="px-3 py-3.5">
+                      <div class="flex items-center gap-2.5">
+                        <div
+                          class="w-7 h-7 rounded-full bg-gray-100 flex items-center justify-center flex-shrink-0">
+                          <span class="text-gray-500 text-xs font-medium"
+                            >RL</span
+                          >
+                        </div>
+                        <div>
+                          <p class="text-sm font-medium text-gray-900">
+                            Redline Studio
+                          </p>
+                          <p class="text-xs text-gray-400">
+                            billing@redline.studio
+                          </p>
+                        </div>
+                      </div>
+                    </td>
+                    <td class="px-3 py-3.5">
+                      <span class="badge badge-draft"
+                        ><i class="fa-regular fa-file text-xs"></i>Draft</span
+                      >
+                    </td>
+                    <td class="px-3 py-3.5 text-sm text-gray-400">—</td>
+                    <td
+                      class="px-3 py-3.5 text-right text-sm font-semibold text-gray-900">
+                      £720.00
+                    </td>
+                    <td class="px-3 py-3.5 text-center">
+                      <button
+                        class="text-gray-400 hover:text-gray-600 transition">
+                        <i class="fa-solid fa-ellipsis-vertical"></i>
+                      </button>
+                    </td>
+                  </tr>
+                </tbody>
+              </table>
+
+              <!-- Pagination -->
+              <div
+                class="px-5 py-3 flex items-center justify-between"
+                style="border-top: 1px solid #f3f4f6">
+                <p class="text-xs text-gray-500">
+                  Showing <span class="font-medium text-gray-700">1–6</span> of
+                  <span class="font-medium text-gray-700">21</span> invoices
+                </p>
+                <div class="flex items-center gap-2">
+                  <button
+                    class="btn-outline"
+                    style="font-size: 12px; padding: 5px 12px">
+                    Previous
+                  </button>
+                  <button
+                    class="btn-black"
+                    style="font-size: 12px; padding: 6px 12px">
+                    Next
+                  </button>
+                </div>
+              </div>
+            </div>
+
+            <!-- Right column -->
+            <div class="flex flex-col gap-4">
+              <!-- Outstanding breakdown -->
+              <div class="card">
+                <div class="card-header">
+                  <span class="card-title">Outstanding</span>
+                  <button
+                    class="w-7 h-7 flex items-center justify-center rounded-lg hover:bg-gray-100 transition text-gray-400">
+                    <i
+                      class="fa-regular fa-arrow-up-right-from-square text-sm"></i>
+                  </button>
+                </div>
+                <div class="p-5">
+                  <p
+                    class="text-[28px] font-semibold text-gray-900 tracking-tight leading-none mb-1">
+                    £6,850
+                  </p>
+                  <p class="text-sm text-gray-500 mb-4">
+                    7 invoices awaiting payment
+                  </p>
+                  <div class="space-y-3">
+                    <div>
+                      <div class="flex justify-between text-xs mb-1.5">
+                        <div class="flex items-center gap-1.5">
+                          <span class="w-2 h-2 rounded-full bg-green-500"></span
+                          ><span class="text-gray-600">Paid</span>
+                        </div>
+                        <span class="font-medium text-gray-700">£14,360</span>
+                      </div>
+                      <div class="prog-bar">
+                        <div
+                          class="prog-fill bg-green-500"
+                          style="width: 79%"></div>
+                      </div>
+                    </div>
+                    <div>
+                      <div class="flex justify-between text-xs mb-1.5">
+                        <div class="flex items-center gap-1.5">
+                          <span
+                            class="w-2 h-2 rounded-full bg-yellow-400"></span
+                          ><span class="text-gray-600">Awaiting</span>
+                        </div>
+                        <span class="font-medium text-gray-700">£4,710</span>
+                      </div>
+                      <div class="prog-bar">
+                        <div
+                          class="prog-fill bg-yellow-400"
+                          style="width: 26%"></div>
+                      </div>
+                    </div>
+                    <div>
+                      <div class="flex justify-between text-xs mb-1.5">
+                        <div class="flex items-center gap-1.5">
+                          <span class="w-2 h-2 rounded-full bg-red-400"></span
+                          ><span class="text-gray-600">Overdue</span>
+                        </div>
+                        <span class="font-medium text-gray-700">£2,140</span>
+                      </div>
+                      <div class="prog-bar">
+                        <div
+                          class="prog-fill bg-red-400"
+                          style="width: 12%"></div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Activity Feed -->
+              <div class="card flex-1">
+                <div class="card-header">
+                  <span class="card-title">Activity Feed</span>
+                  <button
+                    class="w-7 h-7 flex items-center justify-center rounded-lg hover:bg-gray-100 transition text-gray-400">
+                    <i
+                      class="fa-regular fa-arrow-up-right-from-square text-sm"></i>
+                  </button>
+                </div>
+                <div class="p-4 space-y-4">
+                  <div class="flex gap-3">
+                    <div
+                      class="w-8 h-8 rounded-lg bg-gray-100 flex items-center justify-center flex-shrink-0">
+                      <i
+                        class="fa-regular fa-circle-check text-gray-600 text-sm"></i>
+                    </div>
+                    <div class="flex-1 min-w-0">
+                      <p class="text-sm font-medium text-gray-900">
+                        Payment received
+                      </p>
+                      <p class="text-xs text-gray-500">
+                        Finkler & Co · £5,600.00
+                      </p>
+                      <div class="flex items-center gap-2 mt-1.5">
+                        <span class="tag tag-green">Paid</span>
+                        <span class="text-xs text-gray-400">· 2 hours ago</span>
+                      </div>
+                    </div>
+                  </div>
+
+                  <div class="flex gap-3">
+                    <div
+                      class="w-8 h-8 rounded-lg bg-gray-100 flex items-center justify-center flex-shrink-0">
+                      <i
+                        class="fa-regular fa-paper-plane text-gray-600 text-sm"></i>
+                    </div>
+                    <div class="flex-1 min-w-0">
+                      <p class="text-sm font-medium text-gray-900">
+                        Invoice sent
+                      </p>
+                      <p class="text-xs text-gray-500">
+                        Northgate Works · INV-0041
+                      </p>
+                      <div class="flex items-center gap-2 mt-1.5">
+                        <span class="tag tag-blue">Sent</span>
+                        <span class="text-xs text-gray-400">· 1 day ago</span>
+                      </div>
+                    </div>
+                  </div>
+
+                  <div class="flex gap-3">
+                    <div
+                      class="w-8 h-8 rounded-lg bg-gray-100 flex items-center justify-center flex-shrink-0">
+                      <i class="fa-regular fa-bell text-gray-600 text-sm"></i>
+                    </div>
+                    <div class="flex-1 min-w-0">
+                      <p class="text-sm font-medium text-gray-900">
+                        Reminder sent
+                      </p>
+                      <p class="text-xs text-gray-500">
+                        Pixel & Arrow · 20 days overdue
+                      </p>
+                      <div class="flex items-center gap-2 mt-1.5">
+                        <span class="tag tag-red">Overdue</span>
+                        <span class="text-xs text-gray-400">· 1 day ago</span>
+                      </div>
+                    </div>
+                  </div>
+
+                  <div class="flex gap-3">
+                    <div
+                      class="w-8 h-8 rounded-lg bg-gray-100 flex items-center justify-center flex-shrink-0">
+                      <i
+                        class="fa-regular fa-circle-check text-gray-600 text-sm"></i>
+                    </div>
+                    <div class="flex-1 min-w-0">
+                      <p class="text-sm font-medium text-gray-900">
+                        Payment received
+                      </p>
+                      <p class="text-xs text-gray-500">
+                        Studio Marta · £2,100.00
+                      </p>
+                      <div class="flex items-center gap-2 mt-1.5">
+                        <span class="tag tag-green">Paid</span>
+                        <span class="text-xs text-gray-400">· 3 days ago</span>
+                      </div>
+                    </div>
+                  </div>
+
+                  <div class="flex gap-3">
+                    <div
+                      class="w-8 h-8 rounded-lg bg-gray-100 flex items-center justify-center flex-shrink-0">
+                      <i class="fa-regular fa-rotate text-gray-600 text-sm"></i>
+                    </div>
+                    <div class="flex-1 min-w-0">
+                      <p class="text-sm font-medium text-gray-900">
+                        Recurring created
+                      </p>
+                      <p class="text-xs text-gray-500">
+                        Finkler & Co · Monthly retainer
+                      </p>
+                      <div class="flex items-center gap-2 mt-1.5">
+                        <span class="tag tag-purple">Recurring</span>
+                        <span class="text-xs text-gray-400">· 4 days ago</span>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </main>
+      </div>
+    </div>
+  </body>
+</html>
